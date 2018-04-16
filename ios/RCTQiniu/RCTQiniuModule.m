@@ -8,16 +8,16 @@
 
 #import "RCTQiniuModule.h"
 
+#import <React/RCTUtils.h>
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
-#import <React/RCTEventEmitter.h>
 #import <AssetsLibrary/AssetsLibrary.h>
-#import <React/RCTUtils.h>
 
 #import "QNUploadOption.h"
 #import "QNUploadManager.h"
 #import "AFNetworking.h"
 #import "UIImageView+AFNetworking.h"
+
 #import "ConstHeader.h"
 
 @interface RCTQiniuModule()
@@ -45,7 +45,6 @@ RCT_EXPORT_METHOD(init:(NSDictionary *)options) {
 
 #pragma mark upload image to qiniu
 RCT_EXPORT_METHOD(uploadImageToQiniu:(NSString *)filePath) {
-  self.callback = callback;
   __block BOOL flag = NO;
   QNUploadOption *uploadOption = [[QNUploadOption alloc] initWithMime:nil
                                                       progressHandler:^(NSString *key, float percent)
@@ -64,6 +63,7 @@ RCT_EXPORT_METHOD(uploadImageToQiniu:(NSString *)filePath) {
                token:self.token
             complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
               [self commentEvent:@"onComplete" code:kSuccess msg:@"上传成功"];
+            }
               option:uploadOption];
 }
 

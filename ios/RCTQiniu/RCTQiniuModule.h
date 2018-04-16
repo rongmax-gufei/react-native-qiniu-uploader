@@ -7,6 +7,7 @@
 //
 
 #import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
 #import <UIKit/UIKit.h>
 
 typedef NS_ENUM(NSInteger, QNHttpsTarget) {
@@ -22,6 +23,5 @@ typedef NS_ENUM(NSInteger, QNZoneTarget) {
   QNZoneTargetNa0 = 4
 };
 
-@interface RCTQiniuModule : NSObject<RCTBridgeModule>
-
+@interface RCTQiniuModule : RCTEventEmitter<RCTBridgeModule>
 @end
