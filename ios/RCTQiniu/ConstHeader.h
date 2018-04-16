@@ -9,6 +9,8 @@
 #ifndef ConstHeader_h
 #define ConstHeader_h
 
+#define kCacheFolder @"qnFileRecorder"
+
 #define kCode @"code"
 #define kType @"type"
 #define kMsg @"msg"
