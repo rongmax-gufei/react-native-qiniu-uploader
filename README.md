@@ -17,7 +17,7 @@ Then link with:
 
  `react-native link react-native-qiniu-uploader`
  
- ## ios环境配置
+ ## iOS环境配置
 ```
 1、cd proj_name/ios/，执行 Pod init，生成 Podfile 和 Podfile.lock
 2、打开 Podfile，添加 pod "Qiniu", "~> 7.1.5"
