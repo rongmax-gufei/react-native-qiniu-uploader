@@ -6,9 +6,9 @@
 //  Copyright © 2018年 Facebook. All rights reserved.
 //
 
+#import <UIKit/UIKit.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
-#import <UIKit/UIKit.h>
 
 // 华东,华北,华南,北美
 typedef NS_ENUM(NSInteger, QNZoneTarget) {
@@ -18,9 +18,9 @@ typedef NS_ENUM(NSInteger, QNZoneTarget) {
     QNZoneTargetNa0 = 4
 };
 
-typedef NS_ENUM(Boolean, UploadType) {
-    UPLOAD_STATUS_YES = YES,
-    UPLOAD_STATUS_NO = NO
+typedef NS_ENUM(NSUInteger, UploadType) {
+    UPLOAD_STATUS_YES = 1,
+    UPLOAD_STATUS_NO = 0
 };
 
 @interface RCTQiniu : RCTEventEmitter<RCTBridgeModule>
