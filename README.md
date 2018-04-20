@@ -1,13 +1,16 @@
-# README
+# react-native-qiniu-uploader
+
+![Platform - Android and iOS](https://img.shields.io/badge/platform-Android%20%7C%20iOS-yellow.svg)
+![MIT](https://img.shields.io/dub/l/vibe-d.svg)
+
 | Author        |     E-mail      |
 | ------------- |:---------------:|
 | gufei         | 799170694@qq.com|
 
-# react-native-qiniu-uploader
-
 ## 功能介绍
 
-- 基于七牛云存储，封装支持断点续传的React-Native控件，支持 iOS Android
+- 支持 iOS Android  七牛云存储断点续传
+- 支持 上传图片和视频等其他文件
  
  ## iOS环境配置
 
