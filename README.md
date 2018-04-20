@@ -93,4 +93,16 @@
 
 [Example](https://github.com/midas-gufei/react-native-qiniu-uploader-demo)
 
+## 运行示例图
+ 
+ <center class="half">
+    <a href="https://raw.githubusercontent.com/midas-gufei/react-native-qiniu-uploader/master/screen-shoot/uploading.png"><img width="375" height="667" src="https://raw.githubusercontent.com/midas-gufei/react-native-qiniu-uploader/master/screen-shoot/uploading.png"/></a>
+    <a href="https://raw.githubusercontent.com/midas-gufei/react-native-qiniu-uploader/master/screen-shoot/pause.png"><img width="375" height="750" src="https://raw.githubusercontent.com/midas-gufei/react-native-qiniu-uploader/master/screen-shoot/pause.png"/></a>
+</center>
+
+## 更新信息
+
+#### 2018-04-20
+- iOS客户端端封装完成
+
 
