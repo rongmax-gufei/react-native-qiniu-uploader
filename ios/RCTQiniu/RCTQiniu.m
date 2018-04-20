@@ -40,7 +40,7 @@ RCT_EXPORT_METHOD(setParams:(NSDictionary *)options) {
   self.upKey = options[@"upKey"];
   self.upToken = options[@"upToken"];
   self.fixedZone = [options[@"zone"] integerValue];
-  self.upManager = [[QNUploadManager alloc] initWithConfiguration:[self configWithZone:self.fixedZone]];
+  self.upManager = [[QNUploadManager alloc] initWithConfiguration:[self config]];
 }
 
 #pragma mark start upload file
@@ -64,13 +64,13 @@ RCT_EXPORT_METHOD(pauseTask) {
 /**
  * zoneTarget:华东1,华北2,华南3,北美4
  */
-- (QNConfiguration *)configWithZone:(NSInteger)zone {
+- (QNConfiguration *)config {
   QNConfiguration *config = nil;
   config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
     //设置断点续传
     NSError *error;
     builder.recorder =  [QNFileRecorder fileRecorderWithFolder:[NSTemporaryDirectory() stringByAppendingString:kCacheFolder] error:&error];
-    switch (zone) {
+    switch (self.fixedZone) {
       case 1:
         // 华东
         builder.zone = [QNFixedZone zone0];
@@ -119,7 +119,7 @@ RCT_EXPORT_METHOD(pauseTask) {
                                                       progressHandler:^(NSString *key, float percent) {
                                                         __strong typeof(weakSelf) strongSelf = weakSelf;
                                                         NSString *per =[NSString stringWithFormat:@"%.2f", percent];
-                                                        [strongSelf commentEvent:@"onProgress" code:kSuccess msg:per percent:per];
+                                                        [strongSelf commentEvent:@"onProgress" code:kSuccess msg:key percent:per];
                                                       }
                                                                params:nil
                                                              checkCrc:NO
