@@ -142,7 +142,8 @@ public class QiniuModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void resumeTask() {
-
+        this.isTaskPause = false;
+        uploadTask();
     }
 
     @ReactMethod

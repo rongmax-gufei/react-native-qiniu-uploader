@@ -19,4 +19,10 @@
 #define kSuccess 1000
 #define kFail 1001
 
+#define onComplete @"onComplete"
+#define onError @"onError"
+#define onProgress @"onProgress"
+
+#define qiniuEvent @"qiniuEvent"
+
 #endif /* ConstHeader_h */

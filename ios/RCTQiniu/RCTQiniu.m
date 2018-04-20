@@ -95,19 +95,26 @@ RCT_EXPORT_METHOD(pauseTask) {
 }
 
 - (BOOL)checkParams {
+  
   BOOL pass = YES;
+  NSString *msg = @"";
+  
   if (nil == self.filePath || [self.filePath isEqual:[NSNull null]]) {
-    [self commentEvent:@"onError" code:kFail msg:@"filePath can not be nil"];
+    msg = @"filePath can not be nil";
     pass = NO;
   } else if (nil == self.upKey || [self.upKey isEqual:[NSNull null]]) {
-    [self commentEvent:@"onError" code:kFail msg:@"upKey can not be nil"];
+    msg = @"upKey can not be nil";
     pass = NO;
   } else if (nil == self.upToken || [self.upToken isEqual:[NSNull null]]) {
-    [self commentEvent:@"onError" code:kFail msg:@"upToken can not be nil"];
+    msg = @"upToken can not be nil";
     pass = NO;
   }
+  
+  [self commentEvent:onError code:kFail msg:msg];
+  
   if (pass && [self.filePath hasPrefix:@"file://"])
     self.filePath = [self.filePath stringByReplacingOccurrencesOfString:@"file://" withString:@""];
+  
   return pass;
 }
 
@@ -119,7 +126,7 @@ RCT_EXPORT_METHOD(pauseTask) {
                                                       progressHandler:^(NSString *key, float percent) {
                                                         __strong typeof(weakSelf) strongSelf = weakSelf;
                                                         NSString *per =[NSString stringWithFormat:@"%.2f", percent];
-                                                        [strongSelf commentEvent:@"onProgress" code:kSuccess msg:key percent:per];
+                                                        [strongSelf commentEvent:onProgress code:kSuccess msg:key percent:per];
                                                       }
                                                                params:nil
                                                              checkCrc:NO
@@ -129,13 +136,13 @@ RCT_EXPORT_METHOD(pauseTask) {
                                                    }];
   [self.upManager putFile:self.filePath key:self.upKey token:self.upToken complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
     if (info.isOK) {
-      [self commentEvent:@"onComplete" code:kSuccess msg:@"上传成功"];
+      [self commentEvent:onComplete code:kSuccess msg:@"上传成功"];
     } else {
       NSString *errorStr = @"";
       for (NSString *key in info.error.userInfo) {
         [errorStr stringByAppendingString:key];
       }
-      [self commentEvent:@"onError" code:info.statusCode msg:errorStr];
+      [self commentEvent:onError code:info.statusCode msg:errorStr];
     }
   }
                    option:uploadOption];
@@ -143,7 +150,7 @@ RCT_EXPORT_METHOD(pauseTask) {
 
 #pragma mark - native to js event method
 - (NSArray<NSString *> *)supportedEvents {
-    return @[@"qiniuEvent"];
+    return @[qiniuEvent];
 }
 
 - (void)commentEvent:(NSString *)type code:(int)code msg:(NSString *)msg {
@@ -158,7 +165,7 @@ RCT_EXPORT_METHOD(pauseTask) {
   params[kPercent] = percent;
   NSLog(@"返回commentEvent%@", params );
   dispatch_async(dispatch_get_main_queue(), ^{
-    [self sendEventWithName:@"qiniuEvent" body:params];
+    [self sendEventWithName:qiniuEvent body:params];
   });
 }
 // RCT必须的方法体，不可删除，否则所有暴露的RCT_EXPORT_METHOD不在主线程执行
