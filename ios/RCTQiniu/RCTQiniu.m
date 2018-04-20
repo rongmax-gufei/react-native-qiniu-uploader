@@ -1,8 +1,8 @@
 //
-//  RCTQiniuModule.m
-//  RCTQiniuModule
+//  RCTQiniu.m
+//  RCTQiniu
 //
-//  Created by Apple on 2018/4/12.
+//  Created by gufei on 2018/4/12.
 //  Copyright © 2018年 Facebook. All rights reserved.
 //
 
@@ -19,7 +19,12 @@
 
 @interface RCTQiniu()
 
-@property (nonatomic, assign) BOOL cancelTask;
+@property QNUploadManager *upManager;
+@property NSInteger fixedZone;
+@property NSString *filePath;
+@property NSString *upKey;
+@property NSString *upToken;
+@property BOOL isTaskPause;
 
 @end
 
@@ -29,44 +34,37 @@
 
 RCT_EXPORT_MODULE();
 
-#pragma mark upload file to qiniu
-RCT_EXPORT_METHOD(uploadFileToQNFilePath:(NSString *)filePath key:(NSString *)key token:(NSString *)uptoken fixedZone:(int)zone) {
-  
-  filePath = [self filePathFormat:filePath];
-  
-  if (!uptoken || !filePath) {
-    [self commentEvent:@"onError" code:kFail msg:@"uptoken or filePath can not be nil"];
-    return;
-  }
-  
-  QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:[self configWithZone:zone]];
-  QNUploadOption *uploadOption = [[QNUploadOption alloc] initWithMime:nil
-                                                      progressHandler:^(NSString *key, float percent) {
-                                    NSString *per =[NSString stringWithFormat:@"%.2f", percent];
-                                    [self commentEvent:@"onUploading" code:kSuccess msg:per];
-                                  }
-                                                               params:nil
-                                                             checkCrc:NO
-                                                   cancellationSignal:^BOOL() {
-                                                     return self.cancelTask;
-                                                   }];
-  [upManager putFile:filePath key:key token:uptoken complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-    int code = info.isOK?kSuccess:info.statusCode;
-    NSString *msg = info.isOK?@"上传成功":info.error.localizedDescription;
-    [self commentEvent:@"onComplete" code:code msg:msg];
-  }
-              option:uploadOption];
+#pragma mark init qiniu sdk
+RCT_EXPORT_METHOD(setParams:(NSDictionary *)options) {
+  self.filePath = options[@"filePath"];
+  self.upKey = options[@"upKey"];
+  self.upToken = options[@"upToken"];
+  self.fixedZone = [options[@"zone"] integerValue];
+  self.upManager = [[QNUploadManager alloc] initWithConfiguration:[self configWithZone:self.fixedZone]];
 }
 
-#pragma mark cancel file upload task
-RCT_EXPORT_METHOD(cancelUploadTask) {
-  self.cancelTask = !self.cancelTask;
+#pragma mark start upload file
+RCT_EXPORT_METHOD(startTask) {
+  [self checkParams];
+  [self filePathFormat];
+  [self uploadTask];
+}
+
+#pragma mark resume upload task
+RCT_EXPORT_METHOD(resumeTask) {
+  self.isTaskPause = NO;
+  [self uploadTask];
+}
+
+#pragma mark pause upload task
+RCT_EXPORT_METHOD(pauseTask) {
+  self.isTaskPause = YES;
 }
 
 /**
  * zoneTarget:华东1,华北2,华南3,北美4
  */
-- (QNConfiguration *)configWithZone:(int)zone {
+- (QNConfiguration *)configWithZone:(NSInteger)zone {
   QNConfiguration *config = nil;
   config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
     //设置断点续传
@@ -96,8 +94,53 @@ RCT_EXPORT_METHOD(cancelUploadTask) {
     return config;
 }
 
-- (NSString *)filePathFormat:(NSString *)filePath {
-  return [filePath stringByReplacingOccurrencesOfString:@"file://" withString:@""];
+- (void)filePathFormat {
+  if (!self.filePath) {
+    self.filePath = [self.filePath stringByReplacingOccurrencesOfString:@"file://" withString:@""];
+  }
+}
+
+- (void)checkParams {
+  if (!self.filePath ) {
+    [self commentEvent:@"onError" code:kFail msg:@"filePath can not be nil"];
+    return;
+  } else if (!self.upKey) {
+    [self commentEvent:@"onError" code:kFail msg:@"upKey can not be nil"];
+    return;
+  } else if (!self.upToken) {
+    [self commentEvent:@"onError" code:kFail msg:@"upToken can not be nil"];
+    return;
+  }
+}
+
+- (void)uploadTask {
+  
+  __weak typeof(self) weakSelf = self;
+  
+  QNUploadOption *uploadOption = [[QNUploadOption alloc] initWithMime:nil
+                                                      progressHandler:^(NSString *key, float percent) {
+                                                        __strong typeof(weakSelf) strongSelf = weakSelf;
+                                                        NSString *per =[NSString stringWithFormat:@"%.2f", percent];
+                                                        [strongSelf commentEvent:@"onProgress" code:kSuccess msg:per];
+                                                      }
+                                                               params:nil
+                                                             checkCrc:NO
+                                                   cancellationSignal:^BOOL() {
+                                                     __strong typeof(weakSelf) strongSelf = weakSelf;
+                                                     return strongSelf.isTaskPause;
+                                                   }];
+  [self.upManager putFile:self.filePath key:self.upKey token:self.upToken complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+    if (info.isOK) {
+      [self commentEvent:@"onComplete" code:kSuccess msg:@"上传成功"];
+    } else {
+      NSString *errorStr = @"";
+      for (NSString *key in info.error.userInfo) {
+        [errorStr stringByAppendingString:key];
+      }
+      [self commentEvent:@"onError" code:info.statusCode msg:errorStr];
+    }
+  }
+                   option:uploadOption];
 }
 
 #pragma mark - native to js event method
