@@ -14,6 +14,7 @@
 #define kCode @"code"
 #define kType @"type"
 #define kMsg @"msg"
+#define kPercent @"percent"
 
 #define kSuccess 1000
 #define kFail 1001

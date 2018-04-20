@@ -45,9 +45,9 @@ RCT_EXPORT_METHOD(setParams:(NSDictionary *)options) {
 
 #pragma mark start upload file
 RCT_EXPORT_METHOD(startTask) {
-  [self checkParams];
-  [self filePathFormat];
-  [self uploadTask];
+  if ([self checkParams]) {
+    [self uploadTask];
+  }
 }
 
 #pragma mark resume upload task
@@ -94,23 +94,21 @@ RCT_EXPORT_METHOD(pauseTask) {
     return config;
 }
 
-- (void)filePathFormat {
-  if (!self.filePath) {
-    self.filePath = [self.filePath stringByReplacingOccurrencesOfString:@"file://" withString:@""];
-  }
-}
-
-- (void)checkParams {
-  if (!self.filePath ) {
+- (BOOL)checkParams {
+  BOOL pass = YES;
+  if (nil == self.filePath || [self.filePath isEqual:[NSNull null]]) {
     [self commentEvent:@"onError" code:kFail msg:@"filePath can not be nil"];
-    return;
-  } else if (!self.upKey) {
+    pass = NO;
+  } else if (nil == self.upKey || [self.upKey isEqual:[NSNull null]]) {
     [self commentEvent:@"onError" code:kFail msg:@"upKey can not be nil"];
-    return;
-  } else if (!self.upToken) {
+    pass = NO;
+  } else if (nil == self.upToken || [self.upToken isEqual:[NSNull null]]) {
     [self commentEvent:@"onError" code:kFail msg:@"upToken can not be nil"];
-    return;
+    pass = NO;
   }
+  if (pass && [self.filePath hasPrefix:@"file://"])
+    self.filePath = [self.filePath stringByReplacingOccurrencesOfString:@"file://" withString:@""];
+  return pass;
 }
 
 - (void)uploadTask {
@@ -121,7 +119,7 @@ RCT_EXPORT_METHOD(pauseTask) {
                                                       progressHandler:^(NSString *key, float percent) {
                                                         __strong typeof(weakSelf) strongSelf = weakSelf;
                                                         NSString *per =[NSString stringWithFormat:@"%.2f", percent];
-                                                        [strongSelf commentEvent:@"onProgress" code:kSuccess msg:per];
+                                                        [strongSelf commentEvent:@"onProgress" code:kSuccess msg:per percent:per];
                                                       }
                                                                params:nil
                                                              checkCrc:NO
@@ -149,16 +147,20 @@ RCT_EXPORT_METHOD(pauseTask) {
 }
 
 - (void)commentEvent:(NSString *)type code:(int)code msg:(NSString *)msg {
-    NSMutableDictionary *params = @{}.mutableCopy;
-    params[kType] = type;
-    params[kCode] = [NSString stringWithFormat:@"%d", code];
-    params[kMsg] = msg;
-    NSLog(@"返回commentEvent%@", params );
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self sendEventWithName:@"qiniuEvent" body:params];
-    });
+  [self commentEvent:type code:code msg:msg percent:@""];
 }
 
+- (void)commentEvent:(NSString *)type code:(int)code msg:(NSString *)msg percent:(NSString *)percent {
+  NSMutableDictionary *params = @{}.mutableCopy;
+  params[kType] = type;
+  params[kCode] = [NSString stringWithFormat:@"%d", code];
+  params[kMsg] = msg;
+  params[kPercent] = percent;
+  NSLog(@"返回commentEvent%@", params );
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self sendEventWithName:@"qiniuEvent" body:params];
+  });
+}
 // RCT必须的方法体，不可删除，否则所有暴露的RCT_EXPORT_METHOD不在主线程执行
 - (dispatch_queue_t)methodQueue {
     return dispatch_get_main_queue();
