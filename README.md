@@ -10,12 +10,12 @@
 - 基于七牛云存储，封装支持断点续传的React-Native控件，支持 iOS Android
  
  ## iOS环境配置
-```
-1、拷贝 RCTQiniu 文件夹下的所有文件至项目 ios/your_proj_name/ 根目录
-2、cd ios/，执行 Pod init，生成 Podfile 和 Podfile.lock
-3、打开 Podfile，添加 pod "Qiniu", "~> 7.1.5"
-4、执行 Pod install
-```
+
+- 拷贝 RCTQiniu 文件夹下的所有文件至项目 ios/ios_proj_name/ 根目录
+- cd rn_proj_name/ios/，执行 Pod init，生成 Podfile 和 Podfile.lock
+- 打开 Podfile，添加 pod "Qiniu", "~> 7.1.5"
+- 执行 Pod install
+
 ## react-native
 ```
   拷贝QNEngine.js文件至ReactNative项目中
