@@ -12,12 +12,46 @@
 - 支持 iOS Android  七牛云存储断点续传
 - 支持 上传图片和视频等其他文件
  
- ## iOS环境配置
+ ## android 环境配置
+ 
+ - 拷贝 android/RCTQiniu 文件夹下的所有文件至项目 app/src/main/java/com.yourcompany.qiniu/ 根目录
+ - app/build.gradle 文件中新增：compile 'com.qiniu:qiniu-android-sdk:7.3.+'
+ - proguard-rules.pro 文件中新增混淆：
+ 
+ ``` 
+-keep class com.qiniu.**{*;}
+-keep class com.qiniu.**{public <init>();}
+-ignorewarnings
+```
 
-- 拷贝 RCTQiniu 文件夹下的所有文件至项目 ios/ios_proj_name/ 根目录
+ - AndroidManifest.xml文件中添加授权：
+ ```
+ <uses-permission android:name="android.permission.CAMERA" />
+ <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+ ```
+ ## iOS 环境配置
+
+- 拷贝 ios/RCTQiniu 文件夹下的所有文件至项目 ios/ios_proj_name/ 根目录
 - cd rn_proj_name/ios/，执行 Pod init，生成 Podfile 和 Podfile.lock
 - 打开 Podfile，添加 pod "Qiniu", "~> 7.1.5"
 - 执行 Pod install
+
+```
+info.plist文件中添加授权：
+<plist version="1.0">
+  <dict>
+    ...
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>$(PRODUCT_NAME) would like access to your photo gallery</string>
+    <key>NSCameraUsageDescription</key>
+    <string>$(PRODUCT_NAME) would like to use your camera</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>$(PRODUCT_NAME) would like to save photos to your photo gallery</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>$(PRODUCT_NAME) would like to your microphone (for videos)</string>
+  </dict>
+</plist>
+```
 
 ## react-native
 ```
