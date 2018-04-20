@@ -8,61 +8,82 @@
 ## 功能介绍
 
 - 基于七牛云存储，封装支持断点续传的React-Native控件，支持 iOS Android
-
-## 安装使用
-
- `npm install --save react-native-qiniu-uploader`
-
-Then link with:
-
- `react-native link react-native-qiniu-uploader`
  
  ## iOS环境配置
 ```
-1、cd proj_name/ios/，执行 Pod init，生成 Podfile 和 Podfile.lock
-2、打开 Podfile，添加 pod "Qiniu", "~> 7.1.5"
-3、执行 Pod install
-4、将如下三个下载的文件路径拖拽到Targets/proj_name/Build Settings/Header Search Paths/
-  proj_name/ios/Pods/Headers/Public/AFNetworking
-  proj_name/ios/Pods/Headers/Public/HappyDNS
-  proj_name/ios/Pods/Headers/Public/Qiniu
+1、拷贝 RCTQiniu 文件夹下的所有文件至项目 ios/your_proj_name/ 根目录
+2、cd ios/，执行 Pod init，生成 Podfile 和 Podfile.lock
+3、打开 Podfile，添加 pod "Qiniu", "~> 7.1.5"
+4、执行 Pod install
 ```
 ## react-native
 ```
-  import { RtcEngine } from 'react-native-qiniu-uploader'
-  
-  componentWillMount() {
-    const options = {
-      token: '111',
-      useHttps: true,// useHttps:使用https=true，否则false
-      zoneTarget: 1 // zoneTarget:华东1,华北2,华南3,北美4
-    }
-    RtcEngine.init(options)
-  }
+  拷贝QNEngine.js文件至ReactNative项目中
 
+  import {QNEngine} from '../libs/QNEngine'
+  
   componentDidMount() {
     //所有的原生通知统一管理
-    RtcEngine.eventEmitter({
-      onUploading: (data) => {
-          console.log(data);
-      },
-      onComplete: (data) => {
-          console.log(data)
-      },
-      onError: (data) => {
-          console.log(data);
-      }
-    })
-  }
+    QNEngine.eventEmitter({
+            onProgress: (data) => {
+                console.log(data.percent);
+            },
+            onComplete: (data) => {
+                console.log(data)
+            },
+            onError: (data) => {
+                console.log(data);
+                switch (data.code) {
+                    case '-2':
+                        Toast.info('任务已暂停', 2)
+                        break;
+                    default:
+                        Toast.fail('错误：' + data.msg, 2)
+                        break;
+                }
+            }        
+    })    
+ }
 
   componentWillUnmount() {
     RtcEngine.removeEmitter()
   }
   
-  // 上传文件fileurl：文件路径，filename：文件名字
-  RtcEngine.uploadFileToQiniu(fileurl, filename)
-  // 取消上传
-  RtcEngine.cancelUploadTask()       
+  /**
+  * @param filePath:文件路径
+  * @param upKey:文件名（唯一，不能重复）
+  * @param upToken:上传token，服务端获取或本地生成
+  * @param zone:上传至指定区域：华东：1,华北：2,华南：3,北美：4
+  */     
+  const params = {
+        filePath: '文件路径',
+        upKey: '文件名字',
+        upToken: '上传token',
+        zone: 1
+       }
+  QNEngine.setParams(params)
+  
+  // 开始上传任务
+  QNEngine.startTask()
+  
+  // 暂停上传任务
+  QNEngine.pauseTask()
+  
+  // 恢复上传任务
+  QNEngine.resumeTask()
+  
+```
+
+## 错误码
+
+```
+  1000 ：success
+  1001 ：fail
+
+  七牛错误代码：
+  -2 ：任务暂停
+  -4 ：文件路径不正确
+  ...
 ```
 
 ## 运行示例
