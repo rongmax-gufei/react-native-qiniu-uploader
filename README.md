@@ -88,7 +88,7 @@ info.plist文件中添加授权：
  }
 
   componentWillUnmount() {
-    RtcEngine.removeEmitter()
+    QNEngine.removeEmitter()
   }
   
   /**
