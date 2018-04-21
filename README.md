@@ -1,5 +1,7 @@
 # react-native-qiniu-uploader
 
+[![npm version](https://badge.fury.io/js/react-native-qiniu-uploader.svg)](https://badge.fury.io/js/react-native-qiniu-uploader)
+[![npm](https://img.shields.io/npm/dt/react-native-qiniu-uploader.svg)](https://www.npmjs.com/package/react-native-qiniu-uploader)
 ![Platform - Android and iOS](https://img.shields.io/badge/platform-Android%20%7C%20iOS-yellow.svg)
 ![MIT](https://img.shields.io/dub/l/vibe-d.svg)
 
