@@ -1,6 +1,7 @@
 package com.learnta.qiniu;
 
 import android.annotation.SuppressLint;
+import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -14,6 +15,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.learnta.qiniu.interfacev1.IQNEngineEventHandler;
+import com.learnta.qiniu.utils.ContentUriUtil;
 import com.learnta.qiniu.utils.FileUtil;
 import com.qiniu.android.common.FixedZone;
 import com.qiniu.android.common.Zone;
@@ -21,6 +23,7 @@ import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.Configuration;
 import com.qiniu.android.storage.KeyGenerator;
 import com.qiniu.android.storage.Recorder;
+import com.qiniu.android.storage.UpCancellationSignal;
 import com.qiniu.android.storage.UpCompletionHandler;
 import com.qiniu.android.storage.UpProgressHandler;
 import com.qiniu.android.storage.UploadManager;
@@ -120,9 +123,9 @@ public class QiniuModule extends ReactContextBaseJavaModule {
     };
 
     /**
-     * 初始化
+     * 设置待上传文件的参数
      *
-     * @param options
+     * @param options 上传数据的可选参数
      */
     @ReactMethod
     public void setParams(final ReadableMap options) {
@@ -217,10 +220,16 @@ public class QiniuModule extends ReactContextBaseJavaModule {
             pass = false;
         }
 
-        engineEventHandler.onError(kFail, msg);
+        if (!pass)
+            engineEventHandler.onError(kFail, msg);
 
-        if (pass && this.filePath.startsWith("file://"))
-            this.filePath = this.filePath.replaceFirst("file://", "");
+        if (pass) {
+            if (filePath.startsWith("file://"))
+                filePath = filePath.replaceFirst("file://", "");
+            else if (filePath.startsWith("content://"))
+                filePath = ContentUriUtil.getPath(context, Uri.parse(filePath));
+        }
+
         return pass;
     }
 
@@ -249,7 +258,11 @@ public class QiniuModule extends ReactContextBaseJavaModule {
                                 String per = String.format("%.2f", percent);
                                 engineEventHandler.onProgress(kSuccess, key, per);
                             }
-                        }, null));
+                        }, new UpCancellationSignal() {
+                    public boolean isCancelled() {
+                        return isTaskPause;
+                    }
+                }));
     }
 
     private void commonEvent(WritableMap map) {

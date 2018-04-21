@@ -110,7 +110,9 @@ RCT_EXPORT_METHOD(pauseTask) {
     pass = NO;
   }
   
-  [self commentEvent:onError code:kFail msg:msg];
+  if (!pass) {
+    [self commentEvent:onError code:kFail msg:msg];
+  }
   
   if (pass && [self.filePath hasPrefix:@"file://"])
     self.filePath = [self.filePath stringByReplacingOccurrencesOfString:@"file://" withString:@""];
