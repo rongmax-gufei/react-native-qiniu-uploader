@@ -247,7 +247,7 @@ public class QiniuModule extends ReactContextBaseJavaModule {
                             Log.i(TAG, "Upload Fail");
                             Log.i(TAG, key + ",\r\n " + info + ",\r\n " + res);
                             //如果失败，这里可以把info信息上报自己的服务器，便于后面分析上传错误原因
-                            engineEventHandler.onError(kFail, info.error);
+                            engineEventHandler.onError(String.valueOf(info.statusCode), info.error);
                         }
                     }
                 }, new UploadOptions(null, null, false,
