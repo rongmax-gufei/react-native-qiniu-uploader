@@ -1,6 +1,6 @@
 {
   "name": "react-native-qiniu-uploader",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Qiniu uploader",
   "main": "index.js",
   "scripts": {
