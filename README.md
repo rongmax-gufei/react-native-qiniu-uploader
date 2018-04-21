@@ -135,6 +135,10 @@ info.plist文件中添加授权：
  <center class="half">
     <a href="https://raw.githubusercontent.com/midas-gufei/react-native-qiniu-uploader/master/screen-shoot/uploading.png"><img width="375" height="667" src="https://raw.githubusercontent.com/midas-gufei/react-native-qiniu-uploader/master/screen-shoot/uploading.png"/></a>
     <a href="https://raw.githubusercontent.com/midas-gufei/react-native-qiniu-uploader/master/screen-shoot/pause.png"><img width="375" height="667" src="https://raw.githubusercontent.com/midas-gufei/react-native-qiniu-uploader/master/screen-shoot/pause.png"/></a>
+</center> 
+<center class="half">
+    <a href="https://raw.githubusercontent.com/midas-gufei/react-native-qiniu-uploader/master/screen-shoot/android-uploading.png"><img width="375" height="750" src="https://raw.githubusercontent.com/midas-gufei/react-native-qiniu-uploader/master/screen-shoot/android-uploading.png"/></a>
+    <a href="https://raw.githubusercontent.com/midas-gufei/react-native-qiniu-uploader/master/screen-shoot/android-pause.png"><img width="375" height="750" src="https://raw.githubusercontent.com/midas-gufei/react-native-qiniu-uploader/master/screen-shoot/android-pause.png"/></a>
 </center>
 
 ## 更新信息
