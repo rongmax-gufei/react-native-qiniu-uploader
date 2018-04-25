@@ -20,10 +20,11 @@
 @interface RCTQiniu()
 
 @property QNUploadManager *upManager;
-@property NSInteger fixedZone;
+@property NSString *taskId;
 @property NSString *filePath;
 @property NSString *upKey;
 @property NSString *upToken;
+@property NSInteger fixedZone;
 @property BOOL isTaskPause;
 
 @end
@@ -36,6 +37,7 @@ RCT_EXPORT_MODULE();
 
 #pragma mark init qiniu sdk
 RCT_EXPORT_METHOD(setParams:(NSDictionary *)options) {
+  self.taskId = options[@"id"];
   self.filePath = options[@"filePath"];
   self.upKey = options[@"upKey"];
   self.upToken = options[@"upToken"];
@@ -164,6 +166,7 @@ RCT_EXPORT_METHOD(pauseTask) {
   params[kType] = type;
   params[kCode] = [NSString stringWithFormat:@"%d", code];
   params[kMsg] = msg;
+  params[kTaskId] = self.taskId;
   params[kPercent] = percent;
   NSLog(@"返回commentEvent%@", params );
   dispatch_async(dispatch_get_main_queue(), ^{

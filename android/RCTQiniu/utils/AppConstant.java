@@ -13,6 +13,7 @@ public class AppConstant {
     public static final String TYPE = "type";
     public static final String CODE = "code";
     public static final String MSG = "msg";
+    public static final String TASK_ID = "id";
     public static final String PERCENT = "percent";
 
     public static final String kSuccess = "1000";

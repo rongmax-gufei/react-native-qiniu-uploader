@@ -42,6 +42,7 @@ import static com.learnta.qiniu.utils.AppConstant.ON_ERROR;
 import static com.learnta.qiniu.utils.AppConstant.ON_PROGRESS;
 import static com.learnta.qiniu.utils.AppConstant.PERCENT;
 import static com.learnta.qiniu.utils.AppConstant.QN_EVENT;
+import static com.learnta.qiniu.utils.AppConstant.TASK_ID;
 import static com.learnta.qiniu.utils.AppConstant.TYPE;
 import static com.learnta.qiniu.utils.AppConstant.kFail;
 import static com.learnta.qiniu.utils.AppConstant.kSuccess;
@@ -60,6 +61,7 @@ public class QiniuModule extends ReactContextBaseJavaModule {
     private ReactApplicationContext context;
 
     private UploadManager uploadManager;
+    private String id;
     private String filePath;
     private String upKey;
     private String upToken;
@@ -129,6 +131,7 @@ public class QiniuModule extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void setParams(final ReadableMap options) {
+        id = options.getString("id");
         filePath = options.getString("filePath");
         upKey = options.getString("upKey");
         upToken = options.getString("upToken");
@@ -266,6 +269,7 @@ public class QiniuModule extends ReactContextBaseJavaModule {
     }
 
     private void commonEvent(WritableMap map) {
+        map.putString(TASK_ID, id);
         sendEvent(getReactApplicationContext(), QN_EVENT, map);
     }
 
